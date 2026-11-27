@@ -48,9 +48,12 @@ async def test_requests_are_counted_by_route_template_not_raw_path():
 
     assert sample("http_requests_total", **labels) - before == 3
     # One series for the template; no series per id (that would grow without bound).
-    assert REGISTRY.get_sample_value(
-        "http_requests_total", {"method": "GET", "route": "/items/1", "status": "200"}
-    ) is None
+    assert (
+        REGISTRY.get_sample_value(
+            "http_requests_total", {"method": "GET", "route": "/items/1", "status": "200"}
+        )
+        is None
+    )
 
 
 async def test_latency_is_recorded_in_a_histogram():
@@ -80,9 +83,12 @@ async def test_unknown_paths_share_a_single_unmatched_series():
 async def test_health_and_metrics_requests_are_not_counted():
     for path in ("/health", "/metrics"):
         await _get(path)
-        assert REGISTRY.get_sample_value(
-            "http_requests_total", {"method": "GET", "route": path, "status": "200"}
-        ) is None
+        assert (
+            REGISTRY.get_sample_value(
+                "http_requests_total", {"method": "GET", "route": path, "status": "200"}
+            )
+            is None
+        )
 
 
 async def test_in_progress_gauge_returns_to_zero():

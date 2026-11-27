@@ -216,5 +216,9 @@ class TransferEventConsumer:
 
 
 async def _ready_messages(channel: AbstractChannel, queue_name: str) -> int:
-    queue = await channel.declare_queue(queue_name, passive=True)
+    queue = await channel.declare_queue(
+        queue_name,
+        passive=True,
+        robust=False,
+    )
     return queue.declaration_result.message_count

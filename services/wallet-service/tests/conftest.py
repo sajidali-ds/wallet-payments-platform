@@ -52,7 +52,7 @@ def headers_for():
 def eventually():
     """await eventually(check): polls `check()` (sync or async) until it is truthy."""
 
-    async def wait(check, timeout: float = 10.0, interval: float = 0.05): # noqa: ASYNC109
+    async def wait(check, timeout: float = 10.0, interval: float = 0.05):  # noqa: ASYNC109
         deadline = time.monotonic() + timeout
         while True:
             result = check()

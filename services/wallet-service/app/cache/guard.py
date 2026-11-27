@@ -31,9 +31,7 @@ class RedisGuard:
     def is_open(self) -> bool:
         return time.monotonic() < self._open_until
 
-    async def attempt(
-        self, operation: Callable[[], Awaitable[T]], *, fallback: T, what: str
-    ) -> T:
+    async def attempt(self, operation: Callable[[], Awaitable[T]], *, fallback: T, what: str) -> T:
         if self.is_open:
             return fallback
         try:

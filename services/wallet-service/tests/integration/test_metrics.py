@@ -31,9 +31,7 @@ async def test_deposits_are_counted_under_their_own_type(new_account):
     assert sample("wallet_transfer_amount_paise_total", type="deposit") - amount_before == 2500
 
 
-async def test_rejected_transfers_are_not_counted_as_transfers_but_as_errors(
-    new_account, transfer
-):
+async def test_rejected_transfers_are_not_counted_as_transfers_but_as_errors(new_account, transfer):
     alice, bob = await new_account(100), await new_account()
     transfers_before = sample("wallet_transfers_total", type="transfer")
     errors = {"code": "insufficient_funds", "status": "422"}
@@ -65,9 +63,12 @@ async def test_http_metrics_use_route_templates(client, new_account):
 
     assert sample("http_requests_total", **labels) - before == 1
     raw_path = f"/wallets/{account.wallet_id}/deposit"
-    assert REGISTRY.get_sample_value(
-        "http_requests_total", {"method": "POST", "route": raw_path, "status": "201"}
-    ) is None
+    assert (
+        REGISTRY.get_sample_value(
+            "http_requests_total", {"method": "POST", "route": raw_path, "status": "201"}
+        )
+        is None
+    )
 
 
 async def test_outbox_backlog_gauge_follows_the_unpublished_events(client, pool):

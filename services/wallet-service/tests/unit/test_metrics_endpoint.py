@@ -8,7 +8,7 @@ class FakePool:
     def __init__(self, error: Exception | None = None) -> None:
         self.error = error
 
-    async def fetchrow(self, query: str, *args, timeout: float | None = None): # noqa: ASYNC109
+    async def fetchrow(self, query: str, *args, timeout: float | None = None):  # noqa: ASYNC109
         if self.error:
             raise self.error
         return {"backlog": 7, "oldest_age": 12.5}

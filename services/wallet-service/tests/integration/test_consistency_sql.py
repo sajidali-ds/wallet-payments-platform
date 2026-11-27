@@ -1,4 +1,5 @@
 """scripts/verify_consistency.sql: passes on healthy data, and catches each kind of corruption."""
+
 # ruff: noqa: S608
 import asyncio
 from pathlib import Path

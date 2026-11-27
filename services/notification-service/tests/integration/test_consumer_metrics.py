@@ -48,19 +48,21 @@ async def test_queue_depth_gauge_shows_the_backlog_and_drains(
 
     async def blocked_handler(pool, event):
         entered.set()
-        await gate.wait()  # holds the one message we are allowed to have in flight
+        await gate.wait()
         await handle_transfer_completed(pool, event)
 
     consumer = await start_consumer(blocked_handler, prefetch=1)
+
     for _ in range(4):
         await publish(make_event())
+
     await asyncio.wait_for(entered.wait(), timeout=10)
 
     async def main_queue_holds_three() -> bool:
         await refresh_queue_gauges(consumer)
         return sample("notification_queue_depth", queue="main") == 3
 
-    await eventually(main_queue_holds_three)  # 1 in flight (prefetch 1), 3 waiting
+    await eventually(main_queue_holds_three)
     assert sample("notification_consumer_connected") == 1
 
     gate.set()
@@ -73,9 +75,7 @@ async def test_queue_depth_gauge_shows_the_backlog_and_drains(
     await eventually(main_queue_empty)
 
 
-async def test_dead_letter_queue_depth_is_reported(
-    start_consumer, publish, eventually
-):
+async def test_dead_letter_queue_depth_is_reported(start_consumer, publish, eventually):
     consumer = await start_consumer()
     await publish(b"this is not json")  # poison: goes straight to the dead-letter queue
     await eventually(lambda: consumer.stats.acked == 1)

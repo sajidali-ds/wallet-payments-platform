@@ -5,7 +5,6 @@ from aio_pika.abc import AbstractExchange, AbstractRobustConnection
 
 
 class RabbitBroker:
-
     def __init__(self, url: str, exchange_name: str, *, publish_timeout: float = 10.0) -> None:
         self._url = url
         self._exchange_name = exchange_name

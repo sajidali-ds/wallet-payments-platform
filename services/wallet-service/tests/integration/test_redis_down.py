@@ -75,9 +75,10 @@ async def test_health_reports_redis_unavailable_but_stays_200(client):
 
 async def test_redis_failures_and_unavailable_reads_are_counted(new_account, client):
     alice = await new_account(1000)
-    failed_before = REGISTRY.get_sample_value(
-        "wallet_redis_failures_total", {"operation": "balance_get"}
-    ) or 0.0
+    failed_before = (
+        REGISTRY.get_sample_value("wallet_redis_failures_total", {"operation": "balance_get"})
+        or 0.0
+    )
     unavailable_before = REGISTRY.get_sample_value(
         "wallet_balance_cache_total", {"result": "unavailable"}
     )

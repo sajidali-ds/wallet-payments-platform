@@ -39,9 +39,9 @@ async def test_transfer_appears_in_both_histories(client, new_account, transfer)
     alice_entry = (await client.get("/wallets/me/transactions", headers=alice.headers)).json()[
         "items"
     ][0]
-    bob_entry = (await client.get("/wallets/me/transactions", headers=bob.headers)).json()[
-        "items"
-    ][0]
+    bob_entry = (await client.get("/wallets/me/transactions", headers=bob.headers)).json()["items"][
+        0
+    ]
     assert (alice_entry["type"], alice_entry["amount"], alice_entry["balance_after"]) == (
         "transfer",
         -400,
@@ -124,9 +124,7 @@ async def test_sender_cannot_be_chosen_by_the_client(client, new_account, balanc
 
 
 @pytest.mark.parametrize("amount", [0, -5, 10.5, "100", True, None, MAX_AMOUNT_PAISE + 1])
-async def test_invalid_amounts_are_422_and_nothing_is_written(
-    new_account, transfer, pool, amount
-):
+async def test_invalid_amounts_are_422_and_nothing_is_written(new_account, transfer, pool, amount):
     alice, bob = await new_account(1000), await new_account()
     assert (await transfer(alice, bob.wallet_id, amount)).status_code == 422
     assert await pool.fetchval("SELECT count(*) FROM transfers WHERE type = 'transfer'") == 0

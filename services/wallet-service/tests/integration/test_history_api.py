@@ -69,9 +69,7 @@ async def test_pagination_has_no_next_cursor_when_page_is_exactly_full(client, h
     user, wallet_id = await _new_wallet(client, headers_for)
     for amount in (100, 200):
         await _deposit(client, admin, wallet_id, amount)
-    body = (
-        await client.get("/wallets/me/transactions", params={"limit": 2}, headers=user)
-    ).json()
+    body = (await client.get("/wallets/me/transactions", params={"limit": 2}, headers=user)).json()
     assert len(body["items"]) == 2
     assert body["next_cursor"] is None
 

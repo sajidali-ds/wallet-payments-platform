@@ -19,9 +19,7 @@ async def _stored_request_ids(pool) -> list[str | None]:
     return [row["request_id"] for row in rows]
 
 
-async def test_request_id_reaches_the_event_and_the_message_envelope(
-    new_account, transfer, pool
-):
+async def test_request_id_reaches_the_event_and_the_message_envelope(new_account, transfer, pool):
     alice, bob = await new_account(1000), await new_account()
     await pool.execute("DELETE FROM outbox_events")
 

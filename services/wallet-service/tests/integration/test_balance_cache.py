@@ -96,9 +96,7 @@ async def test_a_late_stale_fill_is_rejected(balance_cache):
     assert (await balance_cache.get(user)).value["balance"] == 70
 
 
-async def test_corrupted_entry_is_treated_as_a_miss_and_repaired(
-    new_account, client, redis_client
-):
+async def test_corrupted_entry_is_treated_as_a_miss_and_repaired(new_account, client, redis_client):
     alice = await new_account(1000)
     await redis_client.set(value_key(alice.user_id), "{this is not json")
 

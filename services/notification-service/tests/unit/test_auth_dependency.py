@@ -19,7 +19,6 @@ def _app() -> FastAPI:
     async def whoami(user: CurrentUserDep) -> dict[str, str]:
         return {"id": str(user.id), "role": user.role}
 
-
     return app
 
 
@@ -66,8 +65,12 @@ async def test_expired_token_is_401():
         "not.a.jwt",
         jwt.encode({"sub": str(uuid4()), "role": "user"}, "w" * 40, algorithm="HS256"),  # wrong key
         jwt.encode(
-            {"sub": str(uuid4()), "role": "admin", "iat": datetime.now(UTC),
-             "exp": datetime.now(UTC) + timedelta(minutes=5)},
+            {
+                "sub": str(uuid4()),
+                "role": "admin",
+                "iat": datetime.now(UTC),
+                "exp": datetime.now(UTC) + timedelta(minutes=5),
+            },
             None,
             algorithm="none",
         ),  # forged "alg: none" token claiming to be admin

@@ -7,7 +7,7 @@ class FakePool:
     def __init__(self, error: Exception | None = None) -> None:
         self.error = error
 
-    async def fetchval(self, query: str, timeout: float | None = None) -> int: # noqa: ASYNC109
+    async def fetchval(self, query: str, timeout: float | None = None) -> int:  # noqa: ASYNC109
         if self.error:
             raise self.error
         return 1

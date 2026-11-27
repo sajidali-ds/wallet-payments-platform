@@ -10,7 +10,7 @@ EXCLUDED_PATHS = {"/metrics", "/health"}
 
 
 def route_template(scope: Scope) -> str:
-    """"/wallets/{wallet_id}/deposit" for a matched route, "unmatched" for everything else.
+    """ "/wallets/{wallet_id}/deposit" for a matched route, "unmatched" for everything else.
 
     Unknown paths all share one label: otherwise a scanner probing random URLs would create an
     unbounded number of time series.
