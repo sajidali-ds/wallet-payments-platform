@@ -1,0 +1,19 @@
+global:
+  scrape_interval: 5s      # short, so the dashboard feels live while developing
+  evaluation_interval: 15s
+
+scrape_configs:
+  # Services are scraped directly on the Docker network. The gateway does not route /metrics.
+  # The `job` label (= the service name) is added to every series automatically.
+  - job_name: auth-service
+    static_configs:
+      - targets: ["auth-service:8000"]
+  - job_name: wallet-service
+    static_configs:
+      - targets: ["wallet-service:8000"]
+  - job_name: notification-service
+    static_configs:
+      - targets: ["notification-service:8000"]
+  - job_name: prometheus
+    static_configs:
+      - targets: ["localhost:9090"]

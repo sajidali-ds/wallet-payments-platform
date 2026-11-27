@@ -1,0 +1,14 @@
+target-version = "py312"
+line-length = 100
+extend-exclude = [".venv"]
+
+[lint]
+# E/F: pycodestyle + pyflakes, I: import sorting, UP: modern syntax, B: bugbear,
+# SIM: simplifications, S: security (bandit), ASYNC: catches blocking calls inside async code
+select = ["E", "F", "I", "UP", "B", "SIM", "S", "ASYNC"]
+
+[lint.per-file-ignores]
+"**/tests/**" = ["S101", "S105", "S106", "S311"]  # asserts, fake passwords, seeded random: fine in tests
+
+[lint.isort]
+known-first-party = ["app"]

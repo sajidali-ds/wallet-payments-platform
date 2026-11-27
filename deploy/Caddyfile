@@ -1,0 +1,16 @@
+{
+	email {$ACME_EMAIL}
+}
+
+{$DOMAIN} {
+	encode gzip
+	# API paths go to the gateway (it keeps the request id and the /auth rate limit, and sees the
+	# real client IP through Caddy's X-Forwarded-For). Everything else is the React app.
+	@api path /auth /auth/* /wallets /wallets/* /transfers /transfers/* /admin /admin/* /notifications /notifications/* /health
+	handle @api {
+		reverse_proxy gateway:8080
+	}
+	handle {
+		reverse_proxy frontend:80
+	}
+}

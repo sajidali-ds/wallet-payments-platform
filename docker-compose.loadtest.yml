@@ -1,0 +1,44 @@
+# Load-test profile. Use together with the main file:
+#   docker compose -f docker-compose.yml -f docker-compose.loadtest.yml up -d --build --wait
+#   docker compose -f docker-compose.yml -f docker-compose.loadtest.yml run --rm k6 run /loadtests/k6/transfer.js
+# (the Makefile wraps both: make loadtest-up, make loadtest)
+services:
+  wallet-service:
+    environment:
+      # Per-user limits would throttle the test itself (a user may send 20 transfers/min by default).
+      RATE_LIMIT_TRANSFERS_PER_MINUTE: "10000000"
+      RATE_LIMIT_READS_PER_MINUTE: "10000000"
+      # An INFO log line per request costs real throughput. Warnings (fraud flags, errors) still show.
+      LOG_LEVEL: WARNING
+  auth-service:
+    environment:
+      LOG_LEVEL: WARNING
+  notification-service:
+    environment:
+      LOG_LEVEL: WARNING
+
+  k6:
+    image: grafana/k6:0.54.0
+    profiles: ["loadtest"]   # never started by a plain `docker compose up`
+    user: "0:0"              # lets k6 write the summary into the bind-mounted results folder
+    volumes:
+      - ./loadtests:/loadtests
+    environment:
+      # Straight to the services on the Docker network: the gateway's /auth rate limit (30/min per
+      # IP) would otherwise throttle the logins of the test, and it is not what we want to measure.
+      AUTH_URL: http://auth-service:8000
+      WALLET_URL: http://wallet-service:8000
+      SUMMARY_PATH: /loadtests/results/summary.json
+      ADMIN_EMAIL: ${ADMIN_EMAIL:-}
+      ADMIN_PASSWORD: ${ADMIN_PASSWORD:-}
+      USERS: ${USERS:-50}
+      DURATION_SECONDS: ${DURATION_SECONDS:-60}
+      TRANSFER_RATE: ${TRANSFER_RATE:-50}
+      READ_RATE: ${READ_RATE:-100}
+      LOGIN_RATE: ${LOGIN_RATE:-2}
+      REPLAY_RATIO: ${REPLAY_RATIO:-0.05}
+    depends_on:
+      auth-service:
+        condition: service_healthy
+      wallet-service:
+        condition: service_healthy

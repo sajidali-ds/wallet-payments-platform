@@ -1,0 +1,11 @@
+# Dependencies are version RANGES (requirements*.txt), so CI can break when a new release lands.
+# Dependabot opens weekly PRs; CI tells you whether the bump is safe before you merge it.
+version: 2
+updates:
+  - { package-ecosystem: pip, directory: /services/auth-service, schedule: { interval: weekly } }
+  - { package-ecosystem: pip, directory: /services/wallet-service, schedule: { interval: weekly } }
+  - { package-ecosystem: pip, directory: /services/notification-service, schedule: { interval: weekly } }
+  - { package-ecosystem: docker, directory: /services/auth-service, schedule: { interval: weekly } }
+  - { package-ecosystem: docker, directory: /services/wallet-service, schedule: { interval: weekly } }
+  - { package-ecosystem: docker, directory: /services/notification-service, schedule: { interval: weekly } }
+  - { package-ecosystem: github-actions, directory: /, schedule: { interval: weekly } }

@@ -1,0 +1,22 @@
+# secrets and local environment: never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.dump
+
+# Python
+.venv/
+__pycache__/
+*.pyc
+.pytest_cache/
+.ruff_cache/
+
+# Node (frontend)
+node_modules/
+dist/
+
+# load-test output (the folder itself is kept)
+loadtests/results/*
+!loadtests/results/.gitkeep

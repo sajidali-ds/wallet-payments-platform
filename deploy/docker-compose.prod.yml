@@ -1,0 +1,74 @@
+# Production overrides for a single EC2 host. Use together with the main file; the simplest way is to
+# put this line in .env so every `docker compose` command and every `make` target picks it up:
+#   COMPOSE_FILE=docker-compose.yml:deploy/docker-compose.prod.yml
+#
+# What it adds:
+#  * Caddy: TLS (automatic Let's Encrypt certificates) in front of the gateway. The ONLY container
+#    that listens on a public address. Everything else stays bound to 127.0.0.1 (see docker-compose.yml).
+#  * the real client IP for the gateway's /auth rate limit (deploy/realip.conf)
+#  * restart policies and log rotation, so a reboot or a chatty container cannot take the host down
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "3"
+
+services:
+  caddy:
+    image: caddy:2.8-alpine
+    restart: unless-stopped
+    logging: *logging
+    ports:
+      - "80:80"     # certificate challenge + redirect to HTTPS
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN:?set DOMAIN in .env (the DNS name that points at this host)}
+      ACME_EMAIL: ${ACME_EMAIL:?set ACME_EMAIL in .env (Let's Encrypt expiry notices go here)}
+    volumes:
+      - ./deploy/Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data      # certificates: keep them across restarts (Let's Encrypt rate limits)
+      - caddy_config:/config
+    depends_on:
+      gateway:
+        condition: service_healthy
+      frontend:
+        condition: service_healthy
+
+  frontend:
+    restart: unless-stopped
+    logging: *logging
+
+  gateway:
+    restart: unless-stopped
+    logging: *logging
+    volumes:
+      - ./deploy/realip.conf:/etc/nginx/realip/realip.conf:ro
+
+  postgres:
+    restart: unless-stopped
+    logging: *logging
+  redis:
+    restart: unless-stopped
+    logging: *logging
+  rabbitmq:
+    restart: unless-stopped
+    logging: *logging
+  auth-service:
+    restart: unless-stopped
+    logging: *logging
+  wallet-service:
+    restart: unless-stopped
+    logging: *logging
+  notification-service:
+    restart: unless-stopped
+    logging: *logging
+  prometheus:
+    restart: unless-stopped
+    logging: *logging
+  grafana:
+    restart: unless-stopped
+    logging: *logging
+
+volumes:
+  caddy_data:
+  caddy_config:
